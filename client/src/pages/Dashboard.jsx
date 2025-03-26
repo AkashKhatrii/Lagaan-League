@@ -12,7 +12,7 @@ function Dashboard() {
   const fetchPlayers = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/players/${gameId}`
+        `https://lagaan-league-production.up.railway.app/api/players/${gameId}`
       );
       setPlayers(res.data);
     } catch (err) {
