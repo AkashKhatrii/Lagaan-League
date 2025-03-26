@@ -12,7 +12,7 @@ function ManageGame() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/games")
+      .get("https://lagaan-league-production.up.railway.app/api/games")
       .then((res) =>
         setGames(
           res.data.map((game) => ({ value: game.name, label: game.name }))
@@ -23,10 +23,13 @@ function ManageGame() {
 
   const handleVerify = async () => {
     try {
-      const res = await axios.post("http://localhost:5000/api/games/verify", {
-        name: selectedGame.value,
-        password,
-      });
+      const res = await axios.post(
+        "https://lagaan-league-production.up.railway.app/api/games/verify",
+        {
+          name: selectedGame.value,
+          password,
+        }
+      );
       navigate(`/dashboard/${res.data.gameId}`);
     } catch (err) {
       setError("❌ Invalid name or password");

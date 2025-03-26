@@ -19,11 +19,13 @@ function MatchPrediction({ gameId, players }) {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/matches")
+      .get("https://lagaan-league-production.up.railway.app/api/matches")
       .then((res) => setMatches(res.data))
       .catch(() => setMatches([]));
     axios
-      .get(`http://localhost:5000/api/predictions/${gameId}`)
+      .get(
+        `https://lagaan-league-production.up.railway.app/api/predictions/${gameId}`
+      )
       .then((res) => setPredictedMatchIds(res.data))
       .catch(() => setPredictedMatchIds([]));
   }, [gameId]);
@@ -36,20 +38,23 @@ function MatchPrediction({ gameId, players }) {
       return;
     }
     try {
-      await axios.post("http://localhost:5000/api/predictions", {
-        gameId,
-        matchId: selectedMatch,
-        votedTeam1: team1Votes.map((p) => p.value),
-        votedTeam2: team2Votes.map((p) => p.value),
-        winner,
-      });
+      await axios.post(
+        "https://lagaan-league-production.up.railway.app/api/predictions",
+        {
+          gameId,
+          matchId: selectedMatch,
+          votedTeam1: team1Votes.map((p) => p.value),
+          votedTeam2: team2Votes.map((p) => p.value),
+          winner,
+        }
+      );
       setMessage("✅ Prediction saved!");
       setSelectedMatch(null);
       setTeam1Votes([]);
       setTeam2Votes([]);
       setWinner("");
       const res = await axios.get(
-        `http://localhost:5000/api/predictions/${gameId}`
+        `https://lagaan-league-production.up.railway.app/api/predictions/${gameId}`
       );
       setPredictedMatchIds(res.data);
     } catch (err) {

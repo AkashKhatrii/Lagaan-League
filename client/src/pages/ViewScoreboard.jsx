@@ -11,7 +11,7 @@ function ViewScoreboard() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/games")
+      .get("https://lagaan-league-production.up.railway.app/api/games")
       .then((res) =>
         setGames(res.data.map((g) => ({ value: g._id, label: g.name })))
       )
@@ -22,7 +22,7 @@ function ViewScoreboard() {
     setLoading(true);
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/players/${gameId}`
+        `https://lagaan-league-production.up.railway.app/players/${gameId}`
       );
       const sorted = res.data.sort((a, b) => b.score - a.score);
       setPlayers(sorted);

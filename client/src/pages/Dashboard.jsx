@@ -23,10 +23,13 @@ function Dashboard() {
   const addPlayer = async () => {
     if (!newPlayer.trim()) return;
     try {
-      await axios.post("http://localhost:5000/api/players", {
-        gameId,
-        name: newPlayer.trim(),
-      });
+      await axios.post(
+        "https://lagaan-league-production.up.railway.app/api/players",
+        {
+          gameId,
+          name: newPlayer.trim(),
+        }
+      );
       setNewPlayer("");
       setMessage("✅ Player added!");
       fetchPlayers();

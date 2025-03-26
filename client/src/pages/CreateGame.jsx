@@ -9,10 +9,13 @@ function CreateGame() {
 
   const handleCreateGame = async () => {
     try {
-      const res = await axios.post("http://localhost:5000/api/games", {
-        name,
-        password,
-      });
+      const res = await axios.post(
+        "https://lagaan-league-production.up.railway.app/api/games",
+        {
+          name,
+          password,
+        }
+      );
       setSuccess("🎉 Game created successfully!");
       setError(null);
       setName("");
