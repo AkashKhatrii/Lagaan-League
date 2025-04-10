@@ -8,6 +8,9 @@ function ViewScoreboard() {
   const [selectedGame, setSelectedGame] = useState(null);
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [lastMatchId, setLastMatchId] = useState();
+  const [lastMatchTeam1, setLastMatchTeam1] = useState("");
+  const [lastMatchTeam2, setLastMatchTeam2] = useState("");
 
   useEffect(() => {
     axios
@@ -16,6 +19,16 @@ function ViewScoreboard() {
         setGames(res.data.map((g) => ({ value: g._id, label: g.name })))
       )
       .catch((err) => console.error(err));
+
+    axios.get("https://lagaan-league-production.up.railway.app/api/leaderboard/last-match")
+    .then(res => {
+      setLastMatchId(res.data["matchId"])
+      setLastMatchTeam1(res.data["team1"])
+      setLastMatchTeam2(res.data["team2"])
+    })
+    .catch(err => {
+      console.log(error);
+    })
   }, []);
 
   const fetchScoreboard = async (gameId) => {
@@ -26,6 +39,7 @@ function ViewScoreboard() {
       );
       const sorted = res.data.sort((a, b) => b.score - a.score);
       setPlayers(sorted);
+
     } catch (err) {
       console.error("Failed to load scoreboard", err);
     } finally {
@@ -106,6 +120,25 @@ function ViewScoreboard() {
           </div>
         ) : (
           selectedGame && (
+            <>
+           <div style={{ 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'center', 
+      gap: '16px',
+      fontSize: '24px',
+      fontWeight: '600',
+      margin: '20px 0'
+    }}>
+      <span>After Match: {lastMatchId}</span>
+      <span>{lastMatchTeam1}</span>
+      <img 
+        src="/images/vs.webp" 
+        alt="vs" 
+        style={{ width: '40px', height: '40px', objectFit: 'contain' }} 
+      />
+      <span>{lastMatchTeam2}</span>
+    </div>
             <div className="overflow-x-auto rounded-xl border border-gray-300">
               <table
                 {...getTableProps()}
@@ -156,6 +189,7 @@ function ViewScoreboard() {
                 </tbody>
               </table>
             </div>
+            </>
           )
         )}
       </div>

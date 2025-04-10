@@ -194,6 +194,24 @@ app.get("/api/predictions/:gameId", async (req, res) => {
   }
 });
 
+app.get("/api/leaderboard/last-match", async(req, res) => {
+  try {
+    const lastDoc = await Leaderboard.findOne().sort({_id: -1});
+    const lastMatchId = lastDoc["matchId"]
+    let lastMatch = null;
+    const allMatches = await Match.find({}); 
+  for (const match of allMatches) {
+    if (match.matchId == lastDoc.matchId) {
+      lastMatch = match;
+      break;
+    }
+  }
+    res.json(lastMatch)    
+  }catch (err){
+    res.status(500).json({error: "Failed to fetch document"});
+  }
+})
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

@@ -11,7 +11,7 @@ function MatchPrediction({ gameId, players }) {
   const [winner, setWinner] = useState("");
   const [message, setMessage] = useState("");
 
-  const playerOptions = players.map((p) => ({ label: p.name, value: p.name }));
+  const playerOptions = players.map((p) => ({ label: p.name, value: p.name })).sort((a, b) => a.label.localeCompare(b.label));
   const team1VoterNames = new Set(team1Votes.map((p) => p.value));
   const filteredTeam2Options = playerOptions.filter(
     (p) => !team1VoterNames.has(p.value)
