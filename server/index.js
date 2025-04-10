@@ -5,7 +5,7 @@ require("dotenv").config();
 const Game = require("./models/Game");
 const Player = require("./models/Player");
 const bcrypt = require("bcryptjs");
-
+const path = require("path");
 const app = express();
 app.use(cors());
 app.use(express.json());
