@@ -58,6 +58,29 @@ function ViewScoreboard() {
         Header: "Rank",
         accessor: (_, i) => i + 1,
         id: "rank",
+        Cell: ({ value }) => {
+          if (value === 1) {
+            return (
+              <span role="img" aria-label="gold" title="1st">
+                🥇
+              </span>
+            );
+          } else if (value === 2) {
+            return (
+              <span role="img" aria-label="silver" title="2nd">
+                🥈
+              </span>
+            );
+          } else if (value === 3) {
+            return (
+              <span role="img" aria-label="bronze" title="3rd">
+                🥉
+              </span>
+            );
+          } else {
+            return <span>{value}</span>;
+          }
+        },
       },
       {
         Header: "Player",
@@ -121,24 +144,27 @@ function ViewScoreboard() {
         ) : (
           selectedGame && (
             <>
-           <div style={{ 
-      display: 'flex', 
-      alignItems: 'center', 
-      justifyContent: 'center', 
-      gap: '16px',
-      fontSize: '24px',
-      fontWeight: '600',
-      margin: '20px 0'
-    }}>
-      <span>After Match: {lastMatchId}</span>
-      <span>{lastMatchTeam1}</span>
-      <img 
-        src="/images/vs.webp" 
-        alt="vs" 
-        style={{ width: '40px', height: '40px', objectFit: 'contain' }} 
-      />
-      <span>{lastMatchTeam2}</span>
-    </div>
+           <div className="flex flex-col items-center gap-2 my-6">
+  <div className="text-sm text-gray-500 font-medium">
+    After Match: <span className="font-semibold text-gray-700">{lastMatchId}</span>
+  </div>
+
+  <div className="flex items-center gap-4 px-6 py-3 bg-gray-100 rounded-full shadow-md">
+    <img
+      src={`/images/${lastMatchTeam1.toLowerCase()}.png`}
+      alt={lastMatchTeam1}
+      className="w-10 h-10 object-contain"
+      title={lastMatchTeam1}
+    />
+    <span className="text-xl font-semibold text-gray-700">vs</span>
+    <img
+      src={`/images/${lastMatchTeam2.toLowerCase()}.png`}
+      alt={lastMatchTeam2}
+      className="w-10 h-10 object-contain"
+      title={lastMatchTeam2}
+    />
+  </div>
+</div>
             <div className="overflow-x-auto rounded-xl border border-gray-300">
               <table
                 {...getTableProps()}

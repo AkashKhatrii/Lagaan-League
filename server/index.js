@@ -212,6 +212,19 @@ app.get("/api/leaderboard/last-match", async(req, res) => {
   }
 })
 
+
+app.get("/api/scoreboard/ipl2025", async (req, res) => {
+  try {
+    const gameId = "67e3b5963a0d436153d68441";
+    const players = await Player.find({ gameId: gameId }).sort({ score: -1 });
+    console.log(players);
+    res.json(players);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch IPL 2025 scoreboard" });
+  }
+});
+
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

@@ -7,6 +7,7 @@ import ManageGame from "./pages/ManageGame.jsx";
 import ViewScoreboard from "./pages/ViewScoreboard.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import "./index.css";
+import IplScoreboardKhatri from "./pages/IplScoreboardKhatri.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -17,6 +18,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <Route path="/manage" element={<ManageGame />} />
         <Route path="/scoreboard" element={<ViewScoreboard />} />
         <Route path="/dashboard/:gameId" element={<Dashboard />} />
+        <Route path="/scoreboard/ipl2025" element={<IplScoreboardKhatri />} />
+
+
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
