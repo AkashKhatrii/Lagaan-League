@@ -8,20 +8,20 @@ function MatchPrediction({ gameId, players }) {
   const [selectedMatch, setSelectedMatch] = useState(null);
   const [team1Votes, setTeam1Votes] = useState([]);
   const [team2Votes, setTeam2Votes] = useState([]);
+  const [activeVoteTeam, setActiveVoteTeam] = useState("team1");
   const [winner, setWinner] = useState("");
   const [message, setMessage] = useState("");
 
-  const playerOptions = players.map((p) => ({ label: p.name, value: p.name })).sort((a, b) => a.label.localeCompare(b.label));
-  const team1VoterNames = new Set(team1Votes.map((p) => p.value));
-  const filteredTeam2Options = playerOptions.filter(
-    (p) => !team1VoterNames.has(p.value)
-  );
+  const playerOptions = players
+    .map((p) => ({ label: p.name, value: p.name }))
+    .sort((a, b) => a.label.localeCompare(b.label));
 
   useEffect(() => {
     axios
       .get("https://lagaan-league-production.up.railway.app/api/matches")
       .then((res) => setMatches(res.data))
       .catch(() => setMatches([]));
+
     axios
       .get(
         `https://lagaan-league-production.up.railway.app/api/predictions/${gameId}`
@@ -30,7 +30,27 @@ function MatchPrediction({ gameId, players }) {
       .catch(() => setPredictedMatchIds([]));
   }, [gameId]);
 
-  const selectedMatchDetails = matches.find((m) => m.matchId === selectedMatch);
+  const selectedMatchDetails = matches.find(
+    (m) => m.matchId === selectedMatch
+  );
+
+  const handlePlayerClick = (name) => {
+    if (activeVoteTeam === "team1") {
+      const isInTeam = team1Votes.some((p) => p.value === name);
+      const newTeam1 = isInTeam
+        ? team1Votes.filter((p) => p.value !== name)
+        : [...team1Votes, { label: name, value: name }];
+      setTeam1Votes(newTeam1);
+      setTeam2Votes((prev) => prev.filter((p) => p.value !== name));
+    } else if (activeVoteTeam === "team2") {
+      const isInTeam = team2Votes.some((p) => p.value === name);
+      const newTeam2 = isInTeam
+        ? team2Votes.filter((p) => p.value !== name)
+        : [...team2Votes, { label: name, value: name }];
+      setTeam2Votes(newTeam2);
+      setTeam1Votes((prev) => prev.filter((p) => p.value !== name));
+    }
+  };
 
   const handleSubmitPrediction = async () => {
     if (!selectedMatch || !winner) {
@@ -102,31 +122,64 @@ function MatchPrediction({ gameId, players }) {
         </div>
 
         <div className="space-y-2">
-          <label className="font-semibold text-gray-800">
-            👥 Voted for {selectedMatchDetails?.team1 || "Team 1"}
-          </label>
-          <Select
-            isMulti
-            options={playerOptions}
-            value={team1Votes}
-            onChange={setTeam1Votes}
-          />
+          <label className="font-semibold text-gray-800">👥 Select Voters</label>
+
+          <div className="flex gap-4 mb-2">
+            <button
+              onClick={() => setActiveVoteTeam("team1")}
+              className={`px-4 py-2 rounded-full text-sm font-semibold border transition ${
+                activeVoteTeam === "team1"
+                  ? "bg-blue-600 text-white border-blue-600"
+                  : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+              }`}
+            >
+              Select voters for {selectedMatchDetails?.team1 || "Team 1"}
+            </button>
+            <button
+              onClick={() => setActiveVoteTeam("team2")}
+              className={`px-4 py-2 rounded-full text-sm font-semibold border transition ${
+                activeVoteTeam === "team2"
+                  ? "bg-green-600 text-white border-green-600"
+                  : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+              }`}
+            >
+              Select voters for {selectedMatchDetails?.team2 || "Team 2"}
+            </button>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {playerOptions.map((player) => {
+              const name = player.value;
+              const isTeam1 = team1Votes.some((p) => p.value === name);
+              const isTeam2 = team2Votes.some((p) => p.value === name);
+              const isSelected = isTeam1 || isTeam2;
+              const isActive =
+                (activeVoteTeam === "team1" && isTeam1) ||
+                (activeVoteTeam === "team2" && isTeam2);
+
+              return (
+                <button
+                  key={name}
+                  onClick={() => handlePlayerClick(name)}
+                  className={`px-4 py-1 rounded-full text-sm font-medium border shadow-sm transition ${
+                    isSelected
+                      ? isActive
+                        ? activeVoteTeam === "team1"
+                          ? "bg-blue-500 text-white border-blue-500"
+                          : "bg-green-500 text-white border-green-500"
+                        : "bg-gray-300 text-gray-700 line-through"
+                      : "bg-white text-gray-800 hover:bg-gray-100"
+                  }`}
+                >
+                  {name} ✕
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         <div className="space-y-2">
-          <label className="font-semibold text-gray-800">
-            👥 Voted for {selectedMatchDetails?.team2 || "Team 2"}
-          </label>
-          <Select
-            isMulti
-            options={filteredTeam2Options}
-            value={team2Votes}
-            onChange={setTeam2Votes}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <p className="font-semibold text-gray-800">🏆 Select Winning Team</p>
+          <p className="font-semibold text-gray-800">🏆 Select Final Match Winner</p>
           <div className="flex space-x-4">
             <button
               onClick={() => setWinner("team1")}
