@@ -134,9 +134,9 @@ app.post("/api/predictions", async (req, res) => {
     const winners = winner === "team1" ? votedTeam1 : votedTeam2;
     const losers = winner === "team1" ? votedTeam2 : votedTeam1;
 
-    const pointsLost = 50 * losers.length;
+    const pointsLost = 100 * losers.length;
     const pointsPerWinner =
-      losers.length > 0 ? (50 * losers.length) / winners.length : 0;
+      losers.length > 0 ? (100 * losers.length) / winners.length : 0;
 
     // 4. Update scores
     const allPlayers = await Player.find({ gameId });
@@ -147,7 +147,7 @@ app.post("/api/predictions", async (req, res) => {
     }
 
     for (const name of losers) {
-      scoreMap[name] -= 50;
+      scoreMap[name] -= 100;
     }
 
     for (const name of winners) {
