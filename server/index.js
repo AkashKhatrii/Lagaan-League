@@ -13,10 +13,7 @@ app.use(express.json());
 const PORT = process.env.PORT || 5000;
 
 mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.error(err));
 
@@ -134,9 +131,9 @@ app.post("/api/predictions", async (req, res) => {
     const winners = winner === "team1" ? votedTeam1 : votedTeam2;
     const losers = winner === "team1" ? votedTeam2 : votedTeam1;
 
-    const pointsLost = 200 * losers.length;
+    const pointsLost = 50 * losers.length;
     const pointsPerWinner =
-      losers.length > 0 ? (200 * losers.length) / winners.length : 0;
+      losers.length > 0 ? (50 * losers.length) / winners.length : 0;
 
     // 4. Update scores
     const allPlayers = await Player.find({ gameId });
@@ -147,7 +144,7 @@ app.post("/api/predictions", async (req, res) => {
     }
 
     for (const name of losers) {
-      scoreMap[name] -= 200;
+      scoreMap[name] -= 50;
     }
 
     for (const name of winners) {
@@ -194,21 +191,21 @@ app.get("/api/predictions/:gameId", async (req, res) => {
   }
 });
 
-app.get("/api/leaderboard/last-match", async(req, res) => {
+app.get("/api/leaderboard/last-match", async (req, res) => {
   try {
-    const lastDoc = await Leaderboard.findOne().sort({_id: -1});
+    const lastDoc = await Leaderboard.findOne().sort({ _id: -1 });
     const lastMatchId = lastDoc["matchId"]
     let lastMatch = null;
-    const allMatches = await Match.find({}); 
-  for (const match of allMatches) {
-    if (match.matchId == lastDoc.matchId) {
-      lastMatch = match;
-      break;
+    const allMatches = await Match.find({});
+    for (const match of allMatches) {
+      if (match.matchId == lastDoc.matchId) {
+        lastMatch = match;
+        break;
+      }
     }
-  }
-    res.json(lastMatch)    
-  }catch (err){
-    res.status(500).json({error: "Failed to fetch document"});
+    res.json(lastMatch)
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch document" });
   }
 })
 
