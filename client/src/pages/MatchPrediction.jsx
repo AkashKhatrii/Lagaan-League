@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Select from "react-select";
 import axios from "axios";
+import { API } from "../config";
 
 function MatchPrediction({ gameId, players }) {
   const [matches, setMatches] = useState([]);
@@ -17,17 +18,30 @@ function MatchPrediction({ gameId, players }) {
     .sort((a, b) => a.label.localeCompare(b.label));
 
   useEffect(() => {
-    axios
-      .get("https://lagaan-league-production.up.railway.app/api/matches")
-      .then((res) => setMatches(res.data))
-      .catch(() => setMatches([]));
+    Promise.all([
+      axios.get(`${API}/api/matches`),
+      axios.get(
+        `${API}/api/predictions/${gameId}`
+      ),
+    ])
+      .then(([matchesRes, predictionsRes]) => {
+        const allMatches = matchesRes.data;
+        const predicted = predictionsRes.data;
+        setMatches(allMatches);
+        setPredictedMatchIds(predicted);
 
-    axios
-      .get(
-        `https://lagaan-league-production.up.railway.app/api/predictions/${gameId}`
-      )
-      .then((res) => setPredictedMatchIds(res.data))
-      .catch(() => setPredictedMatchIds([]));
+        // Auto-select first unpredicted match
+        const nextMatch = allMatches
+          .sort((a, b) => a.matchId - b.matchId)
+          .find((m) => !predicted.includes(m.matchId));
+        if (nextMatch) {
+          setSelectedMatch(nextMatch.matchId);
+        }
+      })
+      .catch(() => {
+        setMatches([]);
+        setPredictedMatchIds([]);
+      });
   }, [gameId]);
 
   const selectedMatchDetails = matches.find(
@@ -59,7 +73,7 @@ function MatchPrediction({ gameId, players }) {
     }
     try {
       await axios.post(
-        "https://lagaan-league-production.up.railway.app/api/predictions",
+        `${API}/api/predictions`,
         {
           gameId,
           matchId: selectedMatch,
@@ -74,7 +88,7 @@ function MatchPrediction({ gameId, players }) {
       setTeam2Votes([]);
       setWinner("");
       const res = await axios.get(
-        `https://lagaan-league-production.up.railway.app/api/predictions/${gameId}`
+        `${API}/api/predictions/${gameId}`
       );
       setPredictedMatchIds(res.data);
     } catch (err) {

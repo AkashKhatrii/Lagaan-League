@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { API } from "../config";
 
 function CreateGame() {
   const [name, setName] = useState("");
@@ -10,7 +11,7 @@ function CreateGame() {
   const handleCreateGame = async () => {
     try {
       const res = await axios.post(
-        "https://lagaan-league-production.up.railway.app/api/games",
+        `${API}/api/games`,
         {
           name,
           password,

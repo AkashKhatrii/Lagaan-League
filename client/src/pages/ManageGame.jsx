@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { API } from "../config";
 import Select from "react-select";
 
 function ManageGame() {
@@ -12,7 +13,7 @@ function ManageGame() {
 
   useEffect(() => {
     axios
-      .get("https://lagaan-league-production.up.railway.app/api/games")
+      .get(`${API}/api/games`)
       .then((res) =>
         setGames(
           res.data.map((game) => ({ value: game.name, label: game.name }))
@@ -24,7 +25,7 @@ function ManageGame() {
   const handleVerify = async () => {
     try {
       const res = await axios.post(
-        "https://lagaan-league-production.up.railway.app/api/games/verify",
+        `${API}/api/games/verify`,
         {
           name: selectedGame.value,
           password,

@@ -10,7 +10,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 6000;
 
 mongoose
   .connect(process.env.MONGO_URI)
@@ -209,6 +209,27 @@ app.get("/api/leaderboard/last-match", async (req, res) => {
   }
 })
 
+
+// Returns last two leaderboard snapshots for computing score/rank deltas
+app.get("/api/leaderboard/:gameId/changes", async (req, res) => {
+  try {
+    const { gameId } = req.params;
+    const lastTwo = await Leaderboard.find({ gameId })
+      .sort({ _id: -1 })
+      .limit(2);
+
+    if (lastTwo.length === 0) {
+      return res.json({ current: null, previous: null });
+    }
+
+    const current = lastTwo[0];
+    const previous = lastTwo.length > 1 ? lastTwo[1] : null;
+
+    res.json({ current, previous });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch leaderboard changes" });
+  }
+});
 
 app.get("/api/scoreboard/ipl2025", async (req, res) => {
   try {

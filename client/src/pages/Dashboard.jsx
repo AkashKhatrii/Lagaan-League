@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import MatchPrediction from "./MatchPrediction";
 import axios from "axios";
+import { API } from "../config";
 
 function Dashboard() {
   const { gameId } = useParams();
@@ -12,7 +13,7 @@ function Dashboard() {
   const fetchPlayers = async () => {
     try {
       const res = await axios.get(
-        `https://lagaan-league-production.up.railway.app/api/players/${gameId}`
+        `${API}/api/players/${gameId}`
       );
       setPlayers(res.data);
     } catch (err) {
@@ -24,7 +25,7 @@ function Dashboard() {
     if (!newPlayer.trim()) return;
     try {
       await axios.post(
-        "https://lagaan-league-production.up.railway.app/api/players",
+        `${API}/api/players`,
         {
           gameId,
           name: newPlayer.trim(),
